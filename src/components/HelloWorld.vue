@@ -42,12 +42,14 @@ export default {
             fetch('https://wpra.pythonanywhere.com/')
   .then(response => response.json())
   .then(data => {
+    //max is the current high score
       var max =0;
       var Users=data;
       var regular =[];
       var high = [];
           for(var user in Users){
               if(Users[user].score>max){
+                //if the user needs to replace the high score
                 for(var i in high){
                  regular.push(high[i]);
                 }
@@ -56,12 +58,15 @@ export default {
                 max = Users[user].score;
 
               }else if(Users[user].score==max){
+                //adding user to highscore list if the highscore doesn't need to be replaced
                 high.push(Users[user]);
               }else{
+                //adding regular user to the screen
                 regular.push(Users[user]);
               }
               
           }
+          //update the screen with all the users
           this.Users= regular;
           this.Highest = high;
         });

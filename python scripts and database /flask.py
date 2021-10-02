@@ -17,6 +17,7 @@ def myApi():
       database="wpra$default"
     )
     cur = mydb.cursor()
+    #select 6 random users
     sql = "SELECT * FROM Users     ORDER BY RAND ( )     LIMIT 6;"
     cur.execute(sql)
     ans = []
@@ -30,9 +31,10 @@ def myApi():
           "imageUrl": x[1]
         }
 
-        # convert into JSON:
+        
 
 
         ans.append(x)
+    #converts ans to json
     ans = json.dumps(ans)
     return(str(ans))
