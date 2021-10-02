@@ -1,38 +1,73 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
+   
+    <ul class ="wrapper" id="User List">
+      <div id = "winner" class ="box" v-for="User in Highest" :key="User.username">
+        <h3>HighScore</h3> 
+        {{ User.name }} <br>
+        <img :src = "User.imageUrl">
+        <br>
+        Score: {{User.score}}
+      </div>
+      <div class ="box" v-for="User in Users" :key="User.username">
+        <h3>Regular</h3> 
+        {{ User.name }} <br>
+        <img :src = "User.imageUrl">
+        <br>
+        Score: {{User.score}}
+      </div>
+      
     </ul>
   </div>
+ 
 </template>
 
 <script>
 export default {
   name: 'HelloWorld',
+  data() {
+    return {
+     Highest:[
+     ],
+     Users:[],
+  }
+  },
+  created () {
+       
+        this.timer = setInterval(this.fetchUserList, 1000);  
+    },
+    methods: {
+        fetchUserList () {
+          
+            fetch('https://wpra.pythonanywhere.com/')
+  .then(response => response.json())
+  .then(data => {
+      var max =0;
+      var Users=data;
+      var regular =[];
+      var high = [];
+          for(var user in Users){
+              if(Users[user].score>max){
+                for(var i in high){
+                 regular.push(high[i]);
+                }
+                high=[];
+                high.push(Users[user]);
+                max = Users[user].score;
+
+              }else if(Users[user].score==max){
+                high.push(Users[user]);
+              }else{
+                regular.push(Users[user]);
+              }
+              
+          }
+          this.Users= regular;
+          this.Highest = high;
+        });
+            
+},
+  },
   props: {
     msg: String
   }
@@ -41,9 +76,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
 ul {
   list-style-type: none;
   padding: 0;
@@ -54,5 +86,50 @@ li {
 }
 a {
   color: #42b983;
+}
+body {
+  margin: 40px;
+}
+h3{
+  margin-top:0;
+  margin-bottom:0;
+}
+.wrapper{
+  width:90%;
+  margin-left:auto;
+  margin-right:auto;
+  display: grid;
+  background-color: #fff;
+  color: #2c3e50;
+  grid-gap: 10px;
+}
+@media only screen and (max-width: 600px) {
+ .wrapper {
+  grid-template-columns: 100%;
+}
+}
+@media only screen and (max-width:900px) and (min-width:600px) {
+    .wrapper {
+  grid-template-columns: 50% 50%;
+}
+}
+@media only screen and (min-width:900px) {
+    .wrapper {
+  margin-top:5px;
+  grid-template-columns: 33% 33% 33%;
+}
+}
+img{
+  width:100px;
+}
+#winner{
+  background-color:#42b983;
+}
+.box {
+  background-color:#2c3e50;
+  color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  font-size: 150%;
 }
 </style>
